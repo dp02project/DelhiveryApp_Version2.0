@@ -1,4 +1,5 @@
 import "server-only";
+import { randomUUID } from "crypto";
 import { getDb } from "@/lib/db";
 import { NotFoundError } from "@/lib/api-errors";
 import type { z } from "zod";
@@ -19,6 +20,7 @@ export async function getGroupGift(id: string) {
 export async function createGroupGift(input: z.infer<typeof groupGiftSchema>) {
   return getDb().groupGift.create({
     data: {
+      id: randomUUID(),
       title: input.title,
       occasionType: input.occasionType,
       recipientName: input.recipientName,
