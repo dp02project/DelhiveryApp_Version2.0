@@ -3,7 +3,18 @@
 // passwords), reminders and a group gift. Run with: npm run db:seed
 
 import { PrismaClient } from "@prisma/client";
-import { hashPassword } from "../lib/password";
+import { randomBytes, scrypt as scryptCb } from "crypto";
+import { promisify } from "util";
+
+const scrypt = promisify(scryptCb);
+const KEY_LEN = 64;
+
+async function hashPassword(password: string): Promise<string> {
+  const salt = randomBytes(16).toString("hex");
+  const derived = (await scrypt(password, salt, KEY_LEN)) as Buffer;
+
+  return `scrypt:${salt}:${derived.toString("hex")}`;
+}
 
 const prisma = new PrismaClient();
 
